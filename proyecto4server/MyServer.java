@@ -33,6 +33,7 @@ public class MyServer extends Thread {
     @Override
     public void run() {
         try {
+            System.err.println(socket.getInetAddress().getHostAddress());
             DataOutputStream send = new DataOutputStream(socket.getOutputStream());
             DataInputStream receive = new DataInputStream(socket.getInputStream());
 
@@ -40,8 +41,7 @@ public class MyServer extends Thread {
             send.writeUTF("This is the server (Jueguito)");
 
             // 4 com: recivo accion y datos
-            String actionAndData = receive.readUTF();
-            separarActionAndData(actionAndData);
+            this.action = receive.readUTF();
 
             if (this.action.equals("chat")) {
                 if (!names.contains(nameClient) && !nameClient.isEmpty()) {
@@ -49,29 +49,42 @@ public class MyServer extends Thread {
                     nameClient = "";
                 }
                 writers.add(send);
-                while (true) {
-                    String input = receive.readLine();
-
-                    if (input == null) {
-                        return;
-                    }
-                    for (DataOutputStream writer : writers) {
-                        writer.writeUTF("MESSAGE " + nameClient + ": " + input);
-                    }
-                }
+//                while (true) {
+//                    String input = receive.readLine();
+//
+//                    if (input == null) {
+//                        return;
+//                    }
+//                    for (DataOutputStream writer : writers) {
+//                        writer.writeUTF("MESSAGE " + nameClient + ": " + input);
+//                    }
+//                    Socket m=new Socket("Direccion del destinatario", 5025);
+//                    DataOutputStream dat=new DataOutputStream(m.getOutputStream());
+//                    dat.writeUTF(actionAndData);
+//                    dat.close();
+//                    m.close();
+//                }
             } else if (this.action.equals("log")) {
-                System.out.println(Proyecto4Server.players[0]==null);
-                if (Proyecto4Server.players[0]==null) {
-                    Proyecto4Server.players[0] = new Player(this.nameClient, 0);
-                    send.writeUTF(String.valueOf(1));
-                } else {
-                    if(Proyecto4Server.players[1]==null){
-                    Proyecto4Server.players[1] = new Player(this.nameClient, 0);
-                    send.writeUTF(String.valueOf(2));
-                    }else{
-                        send.writeUTF("Connection refused");
-                    }
-                }
+//                System.out.println(Proyecto4Server.players[0]==null);
+//                if (Proyecto4Server.players[0]==null) {
+//                    Proyecto4Server.players[0] = new Player(this.nameClient, 0);
+//                    send.writeUTF(String.valueOf(1));
+//                } else {
+//                    if(Proyecto4Server.players[1]==null){
+//                    Proyecto4Server.players[1] = new Player(this.nameClient, 0);
+//                    send.writeUTF(String.valueOf(2));
+//                    }else{
+//                        send.writeUTF("Connection refused");
+//                    }
+//                }
+            }else if(this.action.equals("atack")){
+                String dataR=receive.readUTF(); 
+                String val=data.split("&")[0];
+                Socket destiny=new Socket(val, 9090);
+                DataOutputStream dat=new DataOutputStream(destiny.getOutputStream());
+                dat.writeUTF(dataR);
+                dat.close();
+                destiny.close();
             }
             socket.close();
         } // run
