@@ -37,10 +37,6 @@ public class Player {
         this.score = score;
     }
 
-    public int sizeInBytes() {
-        return this.name.length() * 2 + 8;
-    }
-
     @Override
     public String toString() {
         return "Player{" + "name=" + name + ", score=" + score + '}';

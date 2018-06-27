@@ -1,18 +1,17 @@
 package data;
 
-import domain.Player;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 
-public class PlayerData {
+public class ScoreData {
 
     private RandomAccessFile randomAccessFile;
     private int regsQuantity;
     private int regSize;
 
-    public PlayerData() throws IOException {
+    public ScoreData() throws IOException {
         File file = new File(utilities.Constants.pathScorePlayer);
         this.regSize = 100;
         if (file.exists() && !file.isFile()) {
@@ -23,35 +22,35 @@ public class PlayerData {
         }
     } // constructor
 
-    private boolean putValue(int position, Player player) throws IOException {
+    private boolean putValue(int position, Score score) throws IOException {
         if (!(position >= 0 && position <= this.regsQuantity)) {
             System.err.println("1001 - Record position is out of bounds");
             return false;
         } else {
-            if (player.sizeInBytes() > this.regSize) {
+            if (score.sizeInBytes() > this.regSize) {
                 System.err.println("1002 - Record size id out of bounds");
                 return false;
             } else {
                 this.randomAccessFile.seek(position * this.regSize);
-                this.randomAccessFile.writeUTF(player.getName());
-                this.randomAccessFile.writeInt(player.getScore());
+                this.randomAccessFile.writeUTF(score.getName());
+                this.randomAccessFile.writeInt(score.getScore());
                 return true;
             }
         }
-    } // putValue: inserta un nuevo jugador al registro
+    } // putValue: inserta un nuevo score al registro
 
-    public boolean addNewPlayer(Player player) throws IOException {
-        boolean success = putValue(this.regsQuantity, player);
+    public boolean addNewScore(Score score) throws IOException {
+        boolean success = putValue(this.regsQuantity, score);
         if (success) {
             ++this.regsQuantity;
         } // if
         return success;
-    } // addNewPlayer: llama a putValue para insertar jugador
+    } // addNewScore: llama a putValue para insertar un nuevo score
 
-    private Player getPlayer(int position) throws IOException {
+    private Score getScore(int position) throws IOException {
         if (position >= 0 && position <= this.regsQuantity) {
             this.randomAccessFile.seek(position * this.regSize);
-            Player tempPlayer = new Player();
+            Score tempPlayer = new Score();
             tempPlayer.setName(this.randomAccessFile.readUTF());
             tempPlayer.setScore(this.randomAccessFile.readInt());
             return tempPlayer;
@@ -59,17 +58,17 @@ public class PlayerData {
             System.err.println("1003 - position is out of bouns");
             return null;
         }
-    } // getPlayer: retorna jugador segun posicion
+    } // getScore: retorna score segun posicion
 
-    public ArrayList<Player> getAllPlayer() throws IOException {
-        ArrayList<Player> playersArray = new ArrayList<>();
+    public ArrayList<Score> getAllScores() throws IOException {
+        ArrayList<Score> scores = new ArrayList<>();
         for (int i = 0; i < this.regsQuantity; i++) {
-            Player tempPlayer = this.getPlayer(i);
-            if (tempPlayer != null) {
-                playersArray.add(tempPlayer);
+            Score tempScore = this.getScore(i);
+            if (tempScore != null) {
+                scores.add(tempScore);
             }
         }
-        return playersArray;
-    } // getAllPlayer: retorna todos los jugadores
+        return scores;
+    } // getAllScores: retorna todos los jugadores
 
 } // end class
