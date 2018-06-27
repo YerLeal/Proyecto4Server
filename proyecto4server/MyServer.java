@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import utilities.Constants;
 
 public class MyServer extends Thread {
 
@@ -33,58 +34,66 @@ public class MyServer extends Thread {
     @Override
     public void run() {
         try {
-            System.err.println(socket.getInetAddress().getHostAddress());
+            
             DataOutputStream send = new DataOutputStream(socket.getOutputStream());
             DataInputStream receive = new DataInputStream(socket.getInputStream());
 
             // 1 com: envio datos del server
-            send.writeUTF("This is the server (Jueguito)");
+            //send.writeUTF("This is the server (Jueguito)");
 
             // 4 com: recivo accion y datos
-            this.action = receive.readUTF();
-
-            if (this.action.equals("chat")) {
-                if (!names.contains(nameClient) && !nameClient.isEmpty()) {
-                    names.add(nameClient);
-                    nameClient = "";
-                }
-                writers.add(send);
-//                while (true) {
-//                    String input = receive.readLine();
-//
-//                    if (input == null) {
-//                        return;
-//                    }
-//                    for (DataOutputStream writer : writers) {
-//                        writer.writeUTF("MESSAGE " + nameClient + ": " + input);
-//                    }
-//                    Socket m=new Socket("Direccion del destinatario", 5025);
-//                    DataOutputStream dat=new DataOutputStream(m.getOutputStream());
-//                    dat.writeUTF(actionAndData);
-//                    dat.close();
-//                    m.close();
-//                }
-            } else if (this.action.equals("log")) {
-//                System.out.println(Proyecto4Server.players[0]==null);
-//                if (Proyecto4Server.players[0]==null) {
-//                    Proyecto4Server.players[0] = new Player(this.nameClient, 0);
-//                    send.writeUTF(String.valueOf(1));
-//                } else {
-//                    if(Proyecto4Server.players[1]==null){
-//                    Proyecto4Server.players[1] = new Player(this.nameClient, 0);
-//                    send.writeUTF(String.valueOf(2));
-//                    }else{
-//                        send.writeUTF("Connection refused");
-//                    }
-//                }
-            }else if(this.action.equals("atack")){
-                String dataR=receive.readUTF(); 
-                String val=data.split("&")[0];
-                Socket destiny=new Socket(val, 9090);
-                DataOutputStream dat=new DataOutputStream(destiny.getOutputStream());
-                dat.writeUTF(dataR);
-                dat.close();
-                destiny.close();
+            String datos[]=receive.readUTF().split("&");
+            this.action = datos[0];
+            
+            switch (this.action) {
+                case "chat":
+                    String ip1;
+                    String aux1=datos[1];
+                    String message=datos[2];
+                    if(aux1.equals("1")){
+                        ip1=Proyecto4Server.players[1].getIp();
+                    }else{
+                        ip1=Proyecto4Server.players[0].getIp();
+                    }
+                    Socket destiny1=new Socket(ip1, Constants.chatPortNumber);
+                    DataOutputStream dat1=new DataOutputStream(destiny1.getOutputStream());
+                    dat1.writeUTF(message);
+                    dat1.close();
+                    destiny1.close();
+                    break;
+                case "log":
+                    String ipClient=socket.getInetAddress().getHostAddress();
+                    if (Proyecto4Server.players[0]==null) {
+                        Proyecto4Server.players[0] = new Player(datos[1], 0,ipClient);
+                        send.writeUTF(String.valueOf(1));  
+                    } else {
+                        if(Proyecto4Server.players[1]==null){
+                            Proyecto4Server.players[1] = new Player(datos[1], 0,ipClient);
+                            send.writeUTF(String.valueOf(2));
+                        }else{
+                            send.writeUTF("Connection refused");
+                        }
+                    }   break;
+                case "attack":
+                    String dataR=datos[2]+"&"+datos[3];
+                    String ip;
+                    String aux=datos[1];
+                    if(aux.equals("1")){
+                        ip=Proyecto4Server.players[1].getIp();
+                    }else{
+                        ip=Proyecto4Server.players[0].getIp();
+                    }
+                    Socket destiny=new Socket(ip, Constants.atackPortNumber);
+                    DataOutputStream dat=new DataOutputStream(destiny.getOutputStream());
+                    dat.writeUTF(dataR);
+                    dat.close();
+                    destiny.close();
+                    break;
+                case "saveScore":
+                    
+                    break;
+                default:
+                    break;
             }
             socket.close();
         } // run
@@ -93,35 +102,5 @@ public class MyServer extends Thread {
         }
     } // run
 
-    private void separarActionAndData(String actionAndData) {
-        // Token &
-        StringTokenizer st = new StringTokenizer(actionAndData, "&");
-        this.action = st.nextToken();
-        int count;
-        if (this.action.equals("chat")) {
-            count = 1;
-            while (st.hasMoreTokens()) {
-                if (count == 2) {
-                    this.nameClient = st.nextToken();
-                } else if (count == 3) {
-                    this.data = st.nextToken();
-                }
-                count++;
-            }
-        } else if (this.action.equals("log")) {
-            System.out.println("LOG");
-            count = 1;
-            while (st.hasMoreElements()) {
-                if (count == 2) {
-                    this.nameClient = st.nextToken();
-                }
-                count++;
-            }
-        }
-        System.out.println("Action: " + action);
-        System.out.println("Name client: " + nameClient);
-        System.out.println("Data: " + data);
-        System.out.println();
-    }
 
 } // end class
