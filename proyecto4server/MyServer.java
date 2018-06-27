@@ -1,16 +1,10 @@
 package proyecto4server;
 
 import domain.Player;
-import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
-import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.HashSet;
-import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import utilities.Constants;
@@ -19,16 +13,10 @@ public class MyServer extends Thread {
 
     private Socket socket;
     private String action;
-    private String nameClient;
-    private String data;
-    private HashSet<String> names = new HashSet<String>();
-    private static HashSet<DataOutputStream> writers = new HashSet<DataOutputStream>();
-
+    
     public MyServer(Socket socket) {
         this.socket = socket;
         this.action = "";
-        this.nameClient = "";
-        this.data = "";
     } // constructor
 
     @Override
@@ -37,7 +25,7 @@ public class MyServer extends Thread {
             
             DataOutputStream send = new DataOutputStream(socket.getOutputStream());
             DataInputStream receive = new DataInputStream(socket.getInputStream());
-
+            
             // 1 com: envio datos del server
             //send.writeUTF("This is the server (Jueguito)");
 
@@ -49,12 +37,15 @@ public class MyServer extends Thread {
                 case "chat":
                     String ip1;
                     String aux1=datos[1];
-                    String message=datos[2];
+                    String message="";
                     if(aux1.equals("1")){
+                        message=Proyecto4Server.players[Integer.parseInt(aux1)-1].getName()+":";
                         ip1=Proyecto4Server.players[1].getIp();
                     }else{
+                        message=Proyecto4Server.players[Integer.parseInt(aux1)-1].getName()+":";
                         ip1=Proyecto4Server.players[0].getIp();
                     }
+                    message+=datos[2];
                     Socket destiny1=new Socket(ip1, Constants.chatPortNumber);
                     DataOutputStream dat1=new DataOutputStream(destiny1.getOutputStream());
                     dat1.writeUTF(message);
