@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 public class Proyecto4Server {
 
     public static Player players[] = new Player[2];
+    public static String tamannoDeLaMatriz;
 
     public static void main(String[] args) {
         players[0] = null;

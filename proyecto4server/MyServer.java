@@ -1,7 +1,7 @@
 package proyecto4server;
 
 import bussiness.ScoreBussiness;
-import data.Score;
+import domain.Score;
 import domain.Player;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -36,9 +36,6 @@ public class MyServer extends Thread {
             DataOutputStream send = new DataOutputStream(socket.getOutputStream());
             DataInputStream receive = new DataInputStream(socket.getInputStream());
 
-            // 1 com: envio datos del server
-            //send.writeUTF("This is the server (Jueguito)");
-            // 4 com: recivo accion y datos
             String datos[] = receive.readUTF().split("&");
             this.action = datos[0];
 
@@ -66,10 +63,12 @@ public class MyServer extends Thread {
                     if (Proyecto4Server.players[0] == null) {
                         Proyecto4Server.players[0] = new Player(datos[1], 0, ipClient);
                         send.writeUTF(String.valueOf(1));
+                        Proyecto4Server.tamannoDeLaMatriz = receive.readUTF(); // el 1 me manda tamanno
                     } else {
                         if (Proyecto4Server.players[1] == null) {
                             Proyecto4Server.players[1] = new Player(datos[1], 0, ipClient);
                             send.writeUTF(String.valueOf(2));
+                            send.writeUTF(Proyecto4Server.tamannoDeLaMatriz); // le envio tamanno al 2
                         } else {
                             send.writeUTF("Connection refused");
                         }
@@ -80,7 +79,7 @@ public class MyServer extends Thread {
                     String ip;
                     String aux = datos[1];
                     if (aux.equals("1")) {
-                        ip = Proyecto4Server.players[0].getIp();
+                        ip = Proyecto4Server.players[1].getIp();
                     } else {
                         ip = Proyecto4Server.players[0].getIp();
                     }

@@ -2,19 +2,19 @@ package domain;
 
 public class Player {
 
-    private String name,ip;
+    private String name, ip;
     private int score;
 
     public Player() {
         this.name = "";
         this.score = 0;
-        this.ip="0.0.0.0";
+        this.ip = "0.0.0.0";
     } // default
 
-    public Player(String name, int score,String ip) {
+    public Player(String name, int score, String ip) {
         this.name = name;
         this.score = score;
-        this.ip=ip;
+        this.ip = ip;
     } // sobrecargado
 
     public String getName() {

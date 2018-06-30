@@ -1,8 +1,7 @@
 package bussiness;
 
-import data.Score;
+import domain.Score;
 import data.ScoreData;
-import domain.Player;
 import java.io.IOException;
 import java.util.ArrayList;
 
