@@ -32,13 +32,10 @@ public class MyServer extends Thread {
     @Override
     public void run() {
         try {
-
             DataOutputStream send = new DataOutputStream(socket.getOutputStream());
             DataInputStream receive = new DataInputStream(socket.getInputStream());
-
             String datos[] = receive.readUTF().split("&");
             this.action = datos[0];
-
             switch (this.action) {
                 case "chat":
                     String ip1;
@@ -89,17 +86,13 @@ public class MyServer extends Thread {
                     dat.close();
                     destiny.close();
                     break;
-                case "saveScore":
-                    String stringScore = receive.readUTF();
+                case "score":
+                    String stringScore = datos[1];
                     Score newData = fromElementToScore(fromStringToElement(stringScore));
                     ScoreBussiness bussiness = new ScoreBussiness();
                     bussiness.addNewScore(newData);
-                    break;
-
-                case "getScore":
-                    ScoreBussiness bussiness1 = new ScoreBussiness();
-                    ArrayList<Score> allScores = bussiness1.getAllScores();
-                    send.writeInt(allScores.size());
+                    ArrayList<Score> allScores = bussiness.getAllScores();
+                    send.writeUTF(String.valueOf(allScores.size()));
                     for (int i = 0; i < allScores.size(); i++) {
                         send.writeUTF(fromScoreToString(allScores.get(i)));
                     }
@@ -161,4 +154,5 @@ public class MyServer extends Thread {
         xmlStringElementEStudent = xmlStringElementEStudent.replace("\n", "");
         return xmlStringElementEStudent;
     } // fromStudentToString
+    
 } // end class
