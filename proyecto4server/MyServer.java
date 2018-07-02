@@ -46,7 +46,7 @@ public class MyServer extends Thread {
                     String message = "";
                     if (playerNumber.equals("1")) {
                         message = Proyecto4Server.players[Integer.parseInt(playerNumber) - 1].getName() + ":";
-                        ip1 = Proyecto4Server.players[0].getIp();
+                        ip1 = Proyecto4Server.players[1].getIp();
                     } else {
                         message = Proyecto4Server.players[Integer.parseInt(playerNumber) - 1].getName() + ":";
                         ip1 = Proyecto4Server.players[0].getIp();
@@ -79,7 +79,7 @@ public class MyServer extends Thread {
                     String ip;
                     String aux = datos[1];
                     if (aux.equals("1")) {
-                        ip = Proyecto4Server.players[0].getIp();
+                        ip = Proyecto4Server.players[1].getIp();
                     } else {
                         ip = Proyecto4Server.players[0].getIp();
                     }
