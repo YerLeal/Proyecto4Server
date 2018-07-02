@@ -15,7 +15,7 @@ public class Proyecto4Server {
     public static void main(String[] args) {
         players[0] = null;
         try {
-            System.out.println("Server IP: " + InetAddress.getLocalHost().getHostAddress());
+            System.out.println("Server Active ");
             ServerSocket mainServer = new ServerSocket(utilities.Constants.socketPortNumber);
             do {
                 new MyServer(mainServer.accept()).start();

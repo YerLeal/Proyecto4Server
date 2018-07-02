@@ -46,7 +46,7 @@ public class MyServer extends Thread {
                     String message = "";
                     if (playerNumber.equals("1")) {
                         message = Proyecto4Server.players[Integer.parseInt(playerNumber) - 1].getName() + ":";
-                        ip1 = Proyecto4Server.players[1].getIp();
+                        ip1 = Proyecto4Server.players[0].getIp();
                     } else {
                         message = Proyecto4Server.players[Integer.parseInt(playerNumber) - 1].getName() + ":";
                         ip1 = Proyecto4Server.players[0].getIp();
@@ -79,7 +79,7 @@ public class MyServer extends Thread {
                     String ip;
                     String aux = datos[1];
                     if (aux.equals("1")) {
-                        ip = Proyecto4Server.players[1].getIp();
+                        ip = Proyecto4Server.players[0].getIp();
                     } else {
                         ip = Proyecto4Server.players[0].getIp();
                     }
@@ -95,15 +95,31 @@ public class MyServer extends Thread {
                     ScoreBussiness bussiness = new ScoreBussiness();
                     bussiness.addNewScore(newData);
                     break;
-                    
+
                 case "getScore":
                     ScoreBussiness bussiness1 = new ScoreBussiness();
                     ArrayList<Score> allScores = bussiness1.getAllScores();
                     send.writeInt(allScores.size());
-                    for(int i=0; i<allScores.size(); i++){
+                    for (int i = 0; i < allScores.size(); i++) {
                         send.writeUTF(fromScoreToString(allScores.get(i)));
                     }
                     break;
+                case "end":
+                    String ipe;
+                    String number = datos[1];
+                    if (number.equals("1")) {
+                        ipe = Proyecto4Server.players[0].getIp();
+                    } else {
+                        ipe = Proyecto4Server.players[0].getIp();
+                    }
+                    Socket endDestiny = new Socket(ipe, Constants.atackPortNumber);
+                    DataOutputStream endDat = new DataOutputStream(endDestiny.getOutputStream());
+                    endDat.writeUTF("end");
+                    endDat.close();
+                    endDestiny.close();
+
+                    break;
+
                 default:
                     break;
             }
