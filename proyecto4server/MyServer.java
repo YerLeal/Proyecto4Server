@@ -6,17 +6,11 @@ import domain.Player;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.StringReader;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
 import utilities.Constants;
 
 public class MyServer extends Thread {
@@ -76,9 +70,9 @@ public class MyServer extends Thread {
                     String ip;
                     String aux = datos[1];
                     if (aux.equals("1")) {
-                        ip = Proyecto4Server.players[1].getIp();
-                    } else {
                         ip = Proyecto4Server.players[0].getIp();
+                    } else {
+                        ip = Proyecto4Server.players[1].getIp();
                     }
                     Socket destiny = new Socket(ip, Constants.atackPortNumber);
                     DataOutputStream dat = new DataOutputStream(destiny.getOutputStream());
@@ -87,15 +81,19 @@ public class MyServer extends Thread {
                     destiny.close();
                     break;
                 case "score":
-                    String stringScore = datos[1];
-                    Score newData = fromElementToScore(fromStringToElement(stringScore));
                     ScoreBussiness bussiness = new ScoreBussiness();
-                    bussiness.addNewScore(newData);
-                    ArrayList<Score> allScores = bussiness.getAllScores();
-                    send.writeUTF(String.valueOf(allScores.size()));
-                    for (int i = 0; i < allScores.size(); i++) {
-                        send.writeUTF(fromScoreToString(allScores.get(i)));
+                    if (datos[1].equals(1)) {
+                        bussiness.addNewScore(new Score(Proyecto4Server.players[0].getName(), Integer.parseInt(datos[2])));
+                    } else {
+                        bussiness.addNewScore(new Score(Proyecto4Server.players[0].getName(), Integer.parseInt(datos[2])));
                     }
+                    break;
+                case "getScore":
+                    ScoreBussiness bussines=new ScoreBussiness();
+                    List<Score> list=bussines.getAllScores();
+                    ObjectOutputStream oOS=new ObjectOutputStream(socket.getOutputStream());
+                    oOS.writeObject(list);
+                    oOS.close();
                     break;
                 case "end":
                     String ipe;
@@ -110,7 +108,6 @@ public class MyServer extends Thread {
                     endDat.writeUTF("end");
                     endDat.close();
                     endDestiny.close();
-
                     break;
 
                 default:
@@ -123,36 +120,4 @@ public class MyServer extends Thread {
         }
     } // run
 
-    private Score fromElementToScore(Element eScore) {
-        Score score = new Score();
-        score.setName(eScore.getAttributeValue("name"));
-        score.setScore(Integer.parseInt(eScore.getChildText("score")));
-        return score;
-    } // fromElementToScore
-
-    private Element fromStringToElement(String scoreString) {
-        try {
-            SAXBuilder saxBuilder = new SAXBuilder();
-            StringReader stringReader = new StringReader(scoreString);
-            Document doc = saxBuilder.build(stringReader);
-            Element eScore = doc.getRootElement();
-            return eScore;
-        } catch (JDOMException | IOException ex) {
-            Logger.getLogger(MyServer.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
-    } // fromStringToElement
-
-    private String fromScoreToString(Score score) {
-        Element eScore = new Element("score");
-        Element eScor = new Element("scor");
-        eScore.setAttribute("name", score.getName());
-        eScor.addContent(String.valueOf(score.getScore()));
-        eScore.addContent(eScor);
-        XMLOutputter output = new XMLOutputter(Format.getCompactFormat());
-        String xmlStringElementEStudent = output.outputString(eScore);
-        xmlStringElementEStudent = xmlStringElementEStudent.replace("\n", "");
-        return xmlStringElementEStudent;
-    } // fromStudentToString
-    
 } // end class
