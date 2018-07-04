@@ -31,7 +31,7 @@ public class MyServer extends Thread {
             String datos[] = receive.readUTF().split("&");
             this.action = datos[0];
             switch (this.action) {
-                case "chat":
+                case "chat": case "shot":
                     String ip1;
                     String playerNumber = datos[1];
                     String message = "";
@@ -45,7 +45,7 @@ public class MyServer extends Thread {
                     message += datos[2];
                     Socket destiny1 = new Socket(ip1, Constants.chatPortNumber);
                     DataOutputStream dat1 = new DataOutputStream(destiny1.getOutputStream());
-                    dat1.writeUTF(message);
+                    dat1.writeUTF(datos[0] + message);
                     dat1.close();
                     destiny1.close();
                     break;
