@@ -26,8 +26,8 @@ public class MyServer extends Thread {
     @Override
     public void run() {
         try {
-            DataOutputStream send = new DataOutputStream(socket.getOutputStream());
-            DataInputStream receive = new DataInputStream(socket.getInputStream());
+            DataOutputStream send = new DataOutputStream(this.socket.getOutputStream());
+            DataInputStream receive = new DataInputStream(this.socket.getInputStream());
             String datos[] = receive.readUTF().split("&");
             this.action = datos[0];
             switch (this.action) {
@@ -50,7 +50,7 @@ public class MyServer extends Thread {
                     destiny1.close();
                     break;
                 case "log":
-                    String ipClient = socket.getInetAddress().getHostAddress();
+                    String ipClient = this.socket.getInetAddress().getHostAddress();
                     if (Proyecto4Server.players[0] == null) {
                         Proyecto4Server.players[0] = new Player(datos[1], 0, ipClient);
                         send.writeUTF(String.valueOf(1));
@@ -89,9 +89,9 @@ public class MyServer extends Thread {
                     }
                     break;
                 case "getScore":
-                    ScoreBussiness bussines=new ScoreBussiness();
-                    List<Score> list=bussines.getAllScores();
-                    ObjectOutputStream oOS=new ObjectOutputStream(socket.getOutputStream());
+                    ScoreBussiness bussines = new ScoreBussiness();
+                    List<Score> list = bussines.getAllScores();
+                    ObjectOutputStream oOS = new ObjectOutputStream(this.socket.getOutputStream());
                     oOS.writeObject(list);
                     oOS.close();
                     break;
@@ -109,7 +109,6 @@ public class MyServer extends Thread {
                     endDat.close();
                     endDestiny.close();
                     break;
-
                 default:
                     break;
             }
